@@ -1,0 +1,111 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Lokesh Gupta",
+      "email": "lokesh@example.com",
+      "age": 21,
+      "is_active": true,
+      "skills": ["Python", "FastAPI", "React"]
+    },
+    {
+      "id": 2,
+      "name": "Rahul Sharma",
+      "email": "rahul@example.com",
+      "age": 22,
+      "is_active": false,
+      "skills": ["Java", "Spring Boot"]
+    }
+  ],
+  "products": [
+    {
+      "id": 101,
+      "name": "Laptop",
+      "brand": "Dell",
+      "price": 65000,
+      "stock": 15,
+      "rating": 4.7
+    },
+    {
+      "id": 102,
+      "name": "Mechanical Keyboard",
+      "brand": "Logitech",
+      "price": 3500,
+      "stock": 40,
+      "rating": 4.5
+    }
+  ],
+  "employees": [
+    {
+      "id": 201,
+      "name": "Priya Singh",
+      "department": "HR",
+      "salary": 55000,
+      "experience": 3
+    },
+    {
+      "id": 202,
+      "name": "Aman Verma",
+      "department": "Engineering",
+      "salary": 85000,
+      "experience": 5
+    }
+  ],
+  "students": [
+    {
+      "id": 1,
+      "name": "Ankit Kumar",
+      "roll_no": "CSE101",
+      "semester": 6,
+      "cgpa": 8.7
+    },
+    {
+      "id": 2,
+      "name": "Neha Gupta",
+      "roll_no": "CSE102",
+      "semester": 6,
+      "cgpa": 9.1
+    }
+  ],
+  "orders": [
+    {
+      "order_id": 5001,
+      "customer": "Lokesh Gupta",
+      "items": [
+        {
+          "product": "Laptop",
+          "quantity": 1,
+          "price": 65000
+        },
+        {
+          "product": "Mouse",
+          "quantity": 2,
+          "price": 800
+        }
+      ],
+      "total_amount": 66600,
+      "payment_status": "Paid",
+      "delivery_address": {
+        "city": "Ghaziabad",
+        "state": "Uttar Pradesh",
+        "country": "India"
+      }
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "title": "FastAPI Bootcamp",
+      "duration": "20 Hours",
+      "price": 1499,
+      "topics": [
+        "Routing",
+        "Pydantic",
+        "Validation",
+        "JWT",
+        "Dependency Injection",
+        "Swagger"
+      ]
+    }
+  ]
+}
