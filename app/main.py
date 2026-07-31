@@ -1,15 +1,42 @@
-from fastapi import FastAPI,HTTPException,Query,Path
-from services.products import get_all_products
+from fastapi import FastAPI,HTTPException,Query,Path,Request,Depends
+from services.products import get_all_products,add_products,remove_product,change_product
 from pydantic import BaseModel,Field
 from typing import Annotated
-from schema.product import Product
+from schema.product import Product,ProductUpdate
+from uuid import uuid4,UUID
+from datetime import datetime
+from dotenv import load_dotenv
+import os
+from fastapi.responses import JSONResponse
 
 
 app=FastAPI()
 
-@app.get("/")
-def root():
-    return {"message":"Welcome to fastapi."}
+load_dotenv()
+
+@app.middleware("http")
+async def lifecycle(request:Request,call_next):
+    print("Before request")
+    response=await call_next(request)
+    # response["lifecycle"]="was inside"
+    print("After request")
+    return response
+
+
+def common_logic():
+     return "Hello There"
+
+@app.get("/",response_model=dict)
+def root(dep=Depends(common_logic)):
+    DB_PATH=os.getenv("BASE_URL")
+    # return {"message":"Welcome to fastapi.","dependency":dep,"data_path":DB_PATH}
+    return JSONResponse(
+         status_code=200,
+         content={
+              "message":"Welcome to fastapi.","dependency":dep,"data_path":DB_PATH
+              
+         }
+    )
 
 # @app.get("/products")
 # def get_products():
@@ -80,14 +107,43 @@ def get_product_id(product_id:str=Path(
     raise HTTPException(status_code=404,detail="Product not found!")
 
 
-class Product(BaseModel):
-     id:str
-     sku:Annotated[str,Field(min_length=6,max_length=30,
-                             title="SKU",
-                             description="Stock Keeping Unit",
-                             examples=["734-hjd-378-3d"]
-                             )]
+# class Product(BaseModel):
+#      id:str
+#      sku:Annotated[str,Field(min_length=6,max_length=30,
+#                              title="SKU",
+#                              description="Stock Keeping Unit",
+#                              examples=["734-hjd-378-3d"]
+#                              )]
 
 @app.post("/products",status_code=201)
 def create_product(product:Product):
-     return product
+    product_dict=product.model_dump(mode="json")
+    product_dict["id"]=str(uuid4())
+    product_dict["created_at"]=datetime.utcnow().isoformat()+"Z"
+    try:
+          add_products(product_dict)
+    except ValueError as e:
+         raise HTTPException(status_code=400,detail=str(e))
+     
+    return product.model_dump(mode="json")
+
+
+@app.delete("/products/{product_id}")
+def delete_product(
+     product_id:UUID=Path(...,description="Product UUID")
+):
+    try:
+        res=remove_product(str(product_id))
+        return res
+    
+    except Exception as e:
+             raise HTTPException(status_code=400,detail=str(e))
+
+@app.put("/products/{products_id}")
+def update_product(product_id :UUID=Path(...,description="Product UUID"),payload:ProductUpdate=...,):
+     try:
+          update_product=change_product(str(product_id),payload.model_dump(mode="json",exclude_unset=True))
+          return update_product
+     except ValueError as e:
+          raise HTTPException(status_code=404,detail=str(e))
+     
